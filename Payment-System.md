@@ -15,6 +15,7 @@ Let's design a Payment System for Card payment. A Card payment system comprises 
 **Payment Service Provider(PSP)** - Third party components that facilitate business in processing payments safely and securely. example: Stripe, Paypal etc
 
 **Pay-In Flow** - _A payment system receives money from customers on behalf of sellers._
+
 **Pay-Out Flow** - _A payment system sends money to sellers around the world._
 
 **Ledger** -  The ledger keeps a financial record of the payment transaction. For example, when a user pays the seller $1, we record it as debit $1 from a user and credit $1 to the seller. The ledger system is very important in post-payment analysis, such as calculating the total revenue of the e-commerce website or forecasting future revenue. 
@@ -22,10 +23,15 @@ Let's design a Payment System for Card payment. A Card payment system comprises 
 **Wallet** -  The wallet keeps the account balance of the merchant. It may also record how much a given user has paid in total and how much seller is to receive for an order.
 
 **Regulatory Compliance**  - Any payment system or application which is storing card details and integrating with banks to process the payment has to adhere to certain standards and regulations as below   
+        
         - **Payment card Industry Data Security Standard(PCI DSS)** It is a security standard, if the seller sis compliant with this standard then payment page can be generated on the seller's page and it can store the Credit Card details else they need to redirect the request to payment gateways's payment page, which is compliant with this standard.
+        
         - **Payment Services Directive(PSD2)** - To regulate the third-party financial providers. 
+        
         - **Know Your Customer(KYC)** - To run verification account checks from time to time.
+        
         - **Anti Money Laundering(AML)**  - To protect the account from criminal monetary activity.
+
 
 **ISO-8583** - EFT switch message format for card payment processing.   
 
@@ -64,7 +70,7 @@ Let's design a Payment System for Card payment. A Card payment system comprises 
 
 
 
-![ScreenShot](/images/payment-system-sequences.PNG?raw=true)
+![ScreenShot](/images/payment-system-sequence.PNG?raw=true)
 
 
  
