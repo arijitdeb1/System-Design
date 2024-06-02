@@ -1,6 +1,6 @@
 # Domain Name Server(DNS)
 
-![ScreenShot](/images/dns.PNG?raw=true) 
+![ScreenShot](/images/dns.png?raw=true) 
 
 
 1. Request for a web page like www.example.com, DNS Resolver will try to look for corresponding IP address in it's cache.
@@ -26,7 +26,9 @@
 
 ## Root Nameserver
 * There are 13 DNS root nameserver
+
 ![ScreenShot](/images/rootNS.PNG?raw=true) 
+
 * 13 root nameservers doesn't mean there are only 13 server or physical machines but there are multiple physical servers all over the world broadcasting behind the same IP as root nameserver using `Anycast`.
 * Root nameserver hold the details of all TLD nameservers and redirect the request based on extension of domain(.com,.net,.org).
 * The Root nameserver are overseen by a nonprofit org called the `Internet Corporation for Assigned Names and Numbers(ICANN) `
