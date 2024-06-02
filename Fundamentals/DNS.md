@@ -44,7 +44,7 @@
 ## Authoritative Nameserver
 * When a new domain is registered(with GoDaddy etc.),ANS holds the actual mapping of domain name and IP address of server/load balancer.
 * The ANS contains information of the domain name it serves(e.g. google.com) and it can provide a recursive resolver with the IP address of the server found in the DNS `A Record`, or if the domain has a `CNAME record(alias)` it will provide the recursive resolver with an alias domain, at which point the recursive resolver will have to perform a whole new DNS lookup to procure a record from an ANS.
-  * `A Record` denotes the IPv4 address of a given domain.
+* `A Record` denotes the IPv4 address of a given domain.
   
   Example of a `A record`:
 
