@@ -44,9 +44,12 @@
 ## Authoritative Nameserver
 * When a new domain is registered(with GoDaddy etc.),ANS holds the actual mapping of domain name and IP address of server/load balancer.
 * The ANS contains information of the domain name it serves(e.g. google.com) and it can provide a recursive resolver with the IP address of the server found in the DNS `A Record`, or if the domain has a `CNAME record(alias)` it will provide the recursive resolver with an alias domain, at which point the recursive resolver will have to perform a whole new DNS lookup to procure a record from an ANS.
-* `A Record` denotes the IPv4 address of a given domain.
+  * `A Record` denotes the IPv4 address of a given domain.
+  
   Example of a `A record`:
-  ![ScreenShot](/images/A record.PNG?raw=true)
+
+    ![ScreenShot](/images/Arecord.PNG?raw=true)
+
 * `AAAA Record` denotes the IPv6 address of a given domain.
 * Suppose blog.example.com has a `CNAME record`(canonical name) with a value of example.com (without the "blog"). This means when a DNS server hits the DNS records for `blog.example.com`, it actually triggers another DNS lookup to example.com, returning example.com’s IP address via its `A record`. In this case we would say that example.com is the canonical name (or true name) of blog.example.com.
 * The `CNAME record` only points the client to the same IP address as the root domain. Once the client hits that IP address, the web server will still handle the URL accordingly. So for instance, blog.example.com might have a CNAME that points to example.com, directing the client to example.com’s IP address. But when the client actually connects to that IP address, the web server will look at the URL, see that it is blog.example.com, and deliver the blog page rather than the home page.
