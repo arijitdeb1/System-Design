@@ -62,13 +62,8 @@
  * In a distributed system, we can only achieve two of the three.
     
 
-
-
-
-
-
-
 -----------------------------------------
+### Scenario :
 * 1 million requests/day = 12 requests/sec (approx)
 * 1 billion requests/day = 11574 requests/sec (approx)
 -----------------------------------------
@@ -80,6 +75,17 @@
 * Assuming a user requires 50 transactions per user session i.e 
  1 million requests/day = 12 requests/sec (approx) = 12x50 = 600 transactions/sec (approx) = 50 million transactions/day
 -------------------------------------------
+
+## General Benchmarks:
+ * Standard benchmarks for HTTP/HTTPS **`API response`** times
+   * Fast - 100ms [example: in-memory cache or database]
+   * Acceptable - 100ms - 500ms [example: database]
+   * Slow - 500ms - 1s [example: external API]
+   * Too Slow - 1s+ [example: external API]
+ * Capacity of server based on number of Threads to serve requests
+   * Low - upto 50 threads 
+   * Medium - upto 51 to 200 threads
+   * 1 server can handle 10,000 requests/sec
 
 
 
