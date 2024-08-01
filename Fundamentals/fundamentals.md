@@ -113,3 +113,27 @@ Cloudflare, Fastly, Akamai
 - Big data processing strategies (Batch, Stream)
 - Lambda Architec   ture 
  
+# Performance Metrics
+
+# Fault Tolerance
+
+# Scaling
+
+# Database Replication
+ - Replication Lag
+ - Consistency Models
+ - snapshots
+ - How replications are done in databases?
+ - 
+# CAP Theorm
+https://dzone.com/articles/understanding-the-cap-theorem
+https://mwhittaker.github.io/blog/an_illustrated_proof_of_the_cap_theorem/
+https://www.infoq.com/articles/cap-twelve-years-later-how-the-rules-have-changed/
+https://groups.csail.mit.edu/tds/papers/Gilbert/Brewer2.pdf
+https://blog.softwaremill.com/eric-brewer-on-the-cap-theorem-tl-dr-series-83f058945e?gi=a28c5a9348aa
+
+# Sharding/Partitioning
+types of sharding
+
+# Consistent Hashing
+implementation of consistent hashing

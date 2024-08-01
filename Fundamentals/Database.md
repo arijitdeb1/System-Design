@@ -12,19 +12,30 @@
   - [How key value data store scales using consistent hashing?]()
 
 
+### ** `Column-Oriented Database` **
+- Amazon Redshift, Google BigQuery
+- Store data in columns rather than rows i.e all values of a single column across rows would be stored together.
+- Optimized for read-heavy workloads that involve large volumes of data especially when queries involve aggregations, filtering and analytical operations on columns.
+- Higher compression rates compared to row-based databases because similar data types are stored together
+- Designed to scale horizontally, handling large volumes of data across distributed systems.
+- Columnar databases are ideal for data warehousing environments where large volumes of historical data are stored and analyzed.
+- Columnar databases can be beneficial in ETL (Extract, Transform, Load) processes.
+
+
 ### **`Wide Column Store`**
 - Cassandra, Hbase
 - Distributed, scalable 
 - Used for time series data, IOT, sensor data
 - Schemaless, without joins
-- Write heavy workloads,
-  * it uses LSM(Log Structured Merge) tree for write operations which buffers writes in memory and periodically flushes to disk making writes faster.
-  * Read operations are slower compared to write operations as data is stored in multiple column families or partitions.
+- Write heavy workloads, it uses LSM(Log Structured Merge) tree for write operations which buffers writes in memory and periodically flushes to disk making writes faster.
+- Cassandra organizes data into rows and columns, but each row can have a different set of columns.
+- In Cassandra's internal storage, all the columns for a single row are stored together on disk. This is different from true columnar databases where all values of a single column across rows would be stored together.
 - Use cases - 
   - [How Netflix uses Cassandra to scale](https://netflixtechblog.com/scaling-time-series-data-storage-part-i-ec2b6d44ba39)
   - [How Cassandra is used for time series data?]()
   - [How does it provide better compression?]()
   - [Why column oriented storage is more suitable for analytical scenarios]()
+
 
 ### **`Document Store`**
 - Mongodb, Couchdb, Dynamodb
@@ -36,7 +47,8 @@
 - Write operations are slower compared to read operations as data is stored in JSON format and needs to be parsed before writing to disk.
 - Key value pair is stored in a document and documents are stored in a collection. (example: user collection, product collection)
 - Document store is a collection of documents and each document is a collection of key value pairs.
-- Not good for data which is updated frequently as it needs to update all the documents in the collection.
+- They offer powerful indexing capabilities, allowing developers to create indexes on various fields within documents to optimize query performance.
+- Designed to scale horizontally, making it easier to handle large volumes of data across distributed systems.
 - Use cases -
   - [How MongoDB is used for content management?]()
 

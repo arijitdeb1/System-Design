@@ -12,6 +12,11 @@
 
 -----------------------------------------
 
+* 1 million(10^6) = 1 million requests/day = 12 requests/sec (approx)
+* 1 million(10^6) = 1 million requests/day = 720 requests/min (approx)
+* 1 million(10^6) = 1 million requests/day = 43,200 requests/hour (approx)
+
+
 * char - 1 byte(ASCII), 2 byte(UNICODE)
 * int32 - 4 byte, int64 - 8 byte
 * float - 4 byte, double - 8 byte
@@ -33,8 +38,8 @@
  * One system can store 50GB of data in RAM 
 
 ### Traffic Estimation:
- * Total Queries/sec = 250 million * 7 / 24*60*60 = 25*10^7 * 7 / 10K(round off) = 17K queries/sec
-
+ * Total Queries/sec = 250 million * 7 / 24*60*60 = 25*10^7 * 7 / 100K(round off) = 17K queries/sec
+   
 ### Storage Estimation:
  * 2 posts = 250 characters * 2 bytes = 500 bytes * 2 posts = 1 KB per user/day
  * Total Posts by DAU = 250 million * 1 KB = 250 GB/day
@@ -73,7 +78,7 @@
 * Peak Inflow = 30% peak for 1 hour = 300,000 requests/hour = 83 requests/sec (approx) = 90 requests/sec (round off)
 * Peak Inflow = 30% peak for 3 hour = 100,000 requests/hour = 28 requests/sec (approx) = 30 requests/sec (round off)
 * Assuming a user requires 50 transactions per user session i.e 
- 1 million requests/day = 12 requests/sec (approx) = 12x50 = 600 transactions/sec (approx) = 50 million transactions/day
+ 1 million requests/day = 12 requests/sec (approx) = 12x50 = 600 transactions/sec (approx) = 50 million transactions/day  = 600 transactions/sec (approx)
 -------------------------------------------
 
 ## General Benchmarks:
