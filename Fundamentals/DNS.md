@@ -56,3 +56,42 @@
 
     Example of a `CNAME record`:
     ![ScreenShot](/images/cname.PNG?raw=true) 
+
+A record resolves domain name to an IP address(IPv4)
+AAAA record resolves domain name to IP address(IPv6)
+CNAME/canoical name - when u type example.com will redirect to www.example.com
+
+computer read domain name from right to left
+www.example.com.
+www=subdomain
+example=2nd level domain
+.com=top level domain
+.= root domain
+
+subdomains are also used when a website has a different services
+running on the same server and using the same IP address.
+example.com has an FTP service.
+create a subdomain = ftp.example.com for the FTP service and create a
+CNAME
+
+the MX(mail exchanger) record is used for email
+
+the SOA(start of authority) record stores administrative information about the DNS zone
+
+a DNS zone is a section of a domain name space that a certain administrator has been delegated
+control over
+
+The NS(Name server) provides the name of the authorization name server within a domain
+the name server contains all the DNS records necessary for users to find a computer or server on a local network
+or on the internet. It is a final authority in a DNS hierarchy.
+A NS record will list two name servers a primary and secondary
+
+The SRV(service record) points to a server and a service by incuding a port number
+
+The PTR or pointer record
+this is reverse of A or quad A record. they resolve IP addressess to domain names
+PTR records are attached to an email n used to prevent email spam.
+So whenever an email is received, the email server uses the PTR record to make sure the sendeer
+is authentic by matching the domain name in the email with its authentic IP address.
+this is known as reverse DNS lookup. But if email that is sent doesn't match with it;s correct
+and authentic IP address, the email will be flagged as spam
