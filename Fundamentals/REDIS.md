@@ -7,3 +7,7 @@ docker exec -it redis-container redis-cli
 ### Test the container
 set mykey "Hello Redis"
 get mykey
+
+
+#### Delete a key
+DEL myKey

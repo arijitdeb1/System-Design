@@ -9,6 +9,8 @@ public class URLShortener {
     private static final String BASE62 = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
     private static final int BASE62_LENGTH = 62;
     private static final String REDIS_COUNTER_KEY = "url_counter";
+    private static final long INITIAL_COUNTER = 1111111; // Start counter from 7 digits
+    private static final String SALT = "arijit";
     public static String generateShortURL(String longURL) {
         try {
             MessageDigest md = MessageDigest.getInstance("MD5");
@@ -49,14 +51,27 @@ public class URLShortener {
 
     public static String getShortURLWithREDIS() {
         try (Jedis jedis = new Jedis("localhost", 6379)) { // Connect to Redis
+
+            // Set the initial counter if it doesn't exist
+            if (jedis.get(REDIS_COUNTER_KEY) == null) {
+                jedis.set(REDIS_COUNTER_KEY, String.valueOf(INITIAL_COUNTER));
+            }
+
             long counter = jedis.incr(REDIS_COUNTER_KEY); // Increment the Redis counter
-            return encodeBase62ForREDIS(counter); // Convert counter to Base62
+            return combineWithSaltForREDIS(counter, SALT); // Convert counter to Base62
         }
+    }
+
+    private static String combineWithSaltForREDIS(long counter, String salt) {
+        String combined = counter + salt;
+        long saltedCounter = Integer.toUnsignedLong(combined.hashCode()); // Use hash for randomness and only positive values
+        System.out.println("REDIS generated salted counter ---------- "+saltedCounter);
+        return encodeBase62ForREDIS(saltedCounter); // Convert salted counter to Base62
     }
 
     private static String encodeBase62ForREDIS(long value) {
         StringBuilder shortURL = new StringBuilder();
-        while (value > 0) {
+        while (shortURL.length() < 7) {
             shortURL.append(BASE62.charAt((int) (value % 62)));
             value /= 62;
         }
