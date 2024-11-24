@@ -8,6 +8,7 @@ public class URLShortener {
 
     private static final String BASE62 = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
     private static final int BASE62_LENGTH = 62;
+    private static final String REDIS_COUNTER_KEY = "url_counter";
     public static String generateShortURL(String longURL) {
         try {
             MessageDigest md = MessageDigest.getInstance("MD5");
@@ -46,11 +47,28 @@ public class URLShortener {
         return shortURL.toString();
     }
 
+    public static String getShortURLWithREDIS() {
+        try (Jedis jedis = new Jedis("localhost", 6379)) { // Connect to Redis
+            long counter = jedis.incr(REDIS_COUNTER_KEY); // Increment the Redis counter
+            return encodeBase62ForREDIS(counter); // Convert counter to Base62
+        }
+    }
+
+    private static String encodeBase62ForREDIS(long value) {
+        StringBuilder shortURL = new StringBuilder();
+        while (value > 0) {
+            shortURL.append(BASE62.charAt((int) (value % 62)));
+            value /= 62;
+        }
+        return shortURL.reverse().toString(); // Reverse to get the correct Base62 order
+    }
         public static void main(String[] args) {
         String longURL = "https://medium.com/javarevisited/how-to-implement-change-data-capture-cdc-with-kafka-connect-debezium-and-elasticsearch-03cc41454a0a";
         String shortURL = generateShortURL(longURL);
         String shortURL2 = generateShortURLOnlyBase62();
-        System.out.println("Short URL: " + shortURL);
-        System.out.println("Short URL2: " + shortURL2);
+        String shortURL3 = getShortURLWithREDIS();
+        System.out.println("Short URL with MD5: " + shortURL);
+        System.out.println("Short URL with Base62: " + shortURL2);
+        System.out.println("Short URL with REDIS: " + shortURL3);
     }
 }
