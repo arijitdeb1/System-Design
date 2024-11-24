@@ -1,0 +1,1 @@
+![img.png](../images/design_approach.png)
