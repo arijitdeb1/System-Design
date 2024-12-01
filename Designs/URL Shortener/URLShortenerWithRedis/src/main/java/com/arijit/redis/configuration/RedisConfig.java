@@ -9,6 +9,6 @@ public class RedisConfig {
 
     @Bean
     public Jedis jedis() {
-        return new Jedis("redis", 6379);
+        return new Jedis("localhost", 6379);
     }
 }

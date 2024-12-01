@@ -50,6 +50,11 @@
 			<artifactId>jedis</artifactId>
 			<version>5.2.0</version>
 		</dependency>
+		<dependency>
+			<groupId>org.sqids</groupId>
+			<artifactId>sqids</artifactId>
+			<version>0.1.0</version>
+		</dependency>
 	</dependencies>
 
 	<build>
