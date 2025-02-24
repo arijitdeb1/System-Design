@@ -324,3 +324,21 @@ CREATE INDEX idx_lastname ON students(last_name);
        - now update query from User2 will not impact any record.
        - Note: if isbooked is indexed then postgres will not hit Heap and will not work as expected.
        - Note: Different databases has different approach for this specific scenario.
+
+## Database Engines:
+
+| **Aspect**            | **B-Tree**                              | **LSM Tree**                            |
+|-----------------------|-----------------------------------------|-----------------------------------------|
+| **Structure**         | Balanced tree with sorted nodes        | Log-structured with levels of sorted runs |
+| **Write Performance** | Slower (in-place updates, random I/O)  | Faster (sequential writes, append-only) |
+| **Read Performance**  | Faster (direct lookups, less I/O)      | Slower (may require merging runs)       |
+| **Storage**           | Optimized for read-heavy workloads     | Optimized for write-heavy workloads     |
+| **Complexity**        | Simpler for reads, complex updates     | Simpler for writes, complex reads       |
+| **Concurrency**       | Good (locking per node)                | Excellent (immutable runs, no locking)  |
+| **Disk I/O**          | Random reads/writes                    | Sequential writes, random reads         |
+| **Use Cases**         | - Relational databases (e.g., MySQL)   | - NoSQL databases (e.g., Cassandra)     |
+|                       | - File systems (e.g., ext4)            | - Big data systems (e.g., HBase)       |
+|                       | - Read-heavy applications             | - Write-heavy/streaming data (e.g., logs) |
+
+
+![img.png](../images/database_engines.png)
