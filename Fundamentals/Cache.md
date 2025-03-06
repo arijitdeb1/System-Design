@@ -49,3 +49,13 @@
   - Cons: 
     - Data consistency
     - Data loss if the cache goes down before writing to the data store
+
+
+## Memcached
+- How data is organized? (avoid freuqent Fragmentation, slabs of variable size in Pages)
+- How fast processing is handled? (Multi threading, Non blocking I/O)
+- How cache eviction is handled? (LRU)
+- How data access/race condition is handled? (LRU locking/slab level locking)
+- How fast Read is handled? (Hastable based index for keys)
+- How fast Write is handled? (Index the key using Hash, use chain/linked list if key exists)
+- Distributed cache - (in Memcached , communication between memcached servers are not managed by Memcached, rather any client(e.g NodJS) which is connecting to Memcached clusters has to manage it)

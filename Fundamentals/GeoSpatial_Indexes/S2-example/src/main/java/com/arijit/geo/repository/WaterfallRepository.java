@@ -10,10 +10,12 @@ import java.util.List;
 
 @Repository
 public interface WaterfallRepository extends JpaRepository<Waterfall, Long> {
-    //List<Waterfall> findByS2CellIdStartingWith(long l);
+    //List<Waterfall> findByS2CellIdStartingWith(String prefix);
 
     @Query("SELECT w FROM Waterfall w WHERE w.s2CellId BETWEEN :start AND :end")
     List<Waterfall> findByS2CellIdInRange(@Param("start") long start, @Param("end") long end);
+
+    List<Waterfall> findByS2CellId(long s2cellId);
 
 
     // Haversine formula in JPQL to calculate the distance dynamically.
@@ -38,4 +40,7 @@ public interface WaterfallRepository extends JpaRepository<Waterfall, Long> {
     );
 
 
+    // Find waterfalls by S2 cell IDs
+    @Query("SELECT w FROM Waterfall w WHERE w.s2CellId IN :cellIds")
+    List<Waterfall> findByS2CellIds(@Param("cellIds") List<Long> cellIds);
 }
