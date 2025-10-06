@@ -175,3 +175,63 @@ You don't manually manage task switching - the event loop handles it automatical
 Every time you write await, you're essentially saying:
 
 "I'm waiting for something. Event loop, please run other tasks and come back to me when I'm ready."
+
+
+# Event Loop @ FastAPI
+
+Instead of creating a new event loop for each request, here is how FastAPI handles requests correctly using its existing event loop:
+
+**For async def endpoints:** When an asynchronous function is called, it becomes a coroutine. The event loop schedules this coroutine as a task to be run. When the task encounters an await statement (for example, await asyncio.sleep(1)), it yields control back to the event loop. The event loop then immediately switches to process the next ready task, which could be another incoming request.
+
+**For def (synchronous) endpoints:** If you define a function with a standard def signature, FastAPI recognizes that it is blocking. To prevent it from freezing the main event loop, FastAPI automatically runs this function in a separate thread from an internal thread pool. The main event loop remains free to process other incoming requests, and once the synchronous task is complete, its result is returned. 
+
+```
+from fastapi import FastAPI
+import asyncio
+
+app = FastAPI()
+
+async def some_long_async_operation():
+    """Simulates a non-blocking I/O operation."""
+    await asyncio.sleep(2)
+    return "Operation complete!"
+
+@app.get("/perform-async-task")
+async def perform_async_task():
+    # Correct: Schedule a task within the existing event loop
+    result = await some_long_async_operation()
+    return {"message": result}
+
+```
+In this correct example, if 10 requests hit the `/perform-async-task` endpoint at the same time:
+- FastAPI schedules 10 coroutines to run on its single, shared event loop.
+- The first request starts executing some_long_async_operation(). When it hits await asyncio.sleep(2), it pauses and gives control back to the event loop.
+- The event loop immediately picks up the next task (the second request) and starts running it.
+- This continues for all 10 requests. All 10 are "sleeping" concurrently, allowing the single event loop to efficiently manage their I/O waits without creating any new threads or event loops for the requests themselves.
+
+## Handle millions request:
+On a single core, a single event loop is extremely efficient for managing many I/O-bound tasks concurrently. However, several factors prevent it from handling millions of requests alone:
+- **CPU-bound tasks:** A single CPU-bound operation, like a complex calculation or data processing, will block the event loop, freezing all other requests in that process until the task is complete.
+- **System limitations:** A single process is limited by the server's available resources, like CPU and RAM. On multi-core machines, a single-process application would underutilize the hardware by only using one core.
+
+### How to scale FastAPI to handle millions of requests
+High-traffic FastAPI applications use multiple processes, distributed across multiple servers, to achieve massive scale. 
+
+1. **Use multiple workers with a production ASGI server**
+In production, you don't run a FastAPI app with a single uvicorn command. Instead, you use a process manager like `Gunicorn` to run multiple `Uvicorn` worker processes. 
+`Gunicorn:` This orchestrator runs a master process that manages multiple worker processes.
+`Uvicorn workers:` Gunicorn spawns a number of Uvicorn workers, with each worker running its own event loop and FastAPI application instance.
+`Utilize CPU cores:` A common practice is to configure Gunicorn with `(2 * CPU_CORES) + 1` or similar worker counts to maximize hardware utilization.
+
+2. **Scale horizontally with load balancing**
+For even higher loads, you can run multiple instances of your Gunicorn-Uvicorn application and place them behind a load balancer, such as NGINX. 
+`Load balancer:` This distributes incoming traffic across multiple servers or containers, ensuring no single instance is overwhelmed.
+`Stateless applications:` To enable seamless horizontal scaling, your FastAPI application should be stateless. Store user sessions and other stateful data in a centralized, shared cache like Redis instead of in memory.
+
+
+3. **Eliminate blocking operations**
+Even with multiple workers, a single blocking call can still freeze an entire worker process. All requests handled by that worker would be stalled. 
+`Async drivers:` Use async versions of database drivers and HTTP clients (e.g., `asyncpg` for PostgreSQL, databases for multiple databases, httpx for HTTP requests).
+`Offload CPU-heavy tasks:` For CPU-intensive work, like image processing or AI model inference, move the task out of the request/response cycle. Use tools like FastAPI's `BackgroundTasks` or a separate job queue with `Celery`.
+
+4. **Cache aggressively**
