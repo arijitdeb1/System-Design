@@ -44,6 +44,134 @@
 This flow demonstrates how the event loop allows the worker to efficiently juggle both requests, never blocking on a single slow operation. It can make progress on one request, handle another's event, and then return to the first once it becomes ready again.
 
 
+# Event Loop @ Python Asyncio
 
+Think of the event loop as an intelligent task manager. Instead of waiting idly when a task is blocked (like waiting for a network response), it switches to other tasks that are ready to run. This is what makes async code efficient.
 
+Let's look at three tasks that simulate downloading files:
+```
+import asyncio
+import time
 
+async def download_file(name, duration):
+    print(f"[{time.time():.2f}s] {name}: Started downloading")
+    await asyncio.sleep(duration)  # Simulates download time
+    print(f"[{time.time():.2f}s] {name}: Download complete!")
+    return f"{name}_data"
+
+async def main():
+    results = await asyncio.gather(
+        download_file("File_A", 3),
+        download_file("File_B", 2),
+        download_file("File_C", 1)
+    )
+    print(f"All downloads complete: {results}")
+
+# Run the event loop
+start = time.time()
+asyncio.run(main())
+print(f"Total time: {time.time() - start:.2f}s")
+```
+
+Expected Output:
+
+```
+[0.00s] File_A: Started downloading
+[0.00s] File_B: Started downloading
+[0.00s] File_C: Started downloading
+[1.00s] File_C: Download complete!
+[2.00s] File_B: Download complete!
+[3.00s] File_A: Download complete!
+All downloads complete: ['File_A_data', 'File_B_data', 'File_C_data']
+Total time: 3.00s
+```
+
+Notice how all three "downloads" run concurrently, completing in 3 seconds instead of 6 seconds (1+2+3) if they ran sequentially.
+
+**asyncio.run()** always creates a new event loop and closes it at the end of its execution. It is designed to be the main entry point for asyncio programs and should ideally be called only once. This behavior ensures that each call to asyncio.run() operates within a clean and isolated event loop environment, preventing potential conflicts or unexpected behavior that might arise from reusing or modifying an existing loop.
+
+## How the Event Loop Manages Tasks
+
+The event loop maintains two key data structures:
+
+1. **Ready Queue:** Tasks that can run immediately
+2. **Waiting Queue:** Tasks paused at await with their wake-up times
+
+Let me walk you through exactly what happens:
+
+**Time: 0.00s - Initialization**
+```
+Ready Queue: [File_A, File_B, File_C]
+Waiting Queue: []
+
+Action: Event loop created by asyncio.run()
+```
+
+**Time: 0.00s - File_A Starts**
+```
+Event Loop: "Let me run File_A"
+- File_A prints "Started downloading"
+- File_A hits: await asyncio.sleep(3)
+- File_A: "I need to wait 3 seconds"
+
+Ready Queue: [File_B, File_C]
+Waiting Queue: [(3.0s, File_A)]
+
+Action: File_A moved from Ready to Waiting
+```
+
+**Time: 0.00s - File_B Starts**
+```
+Event Loop: "File_A is waiting, let me run File_B"
+- File_B prints "Started downloading"
+- File_B hits: await asyncio.sleep(2)
+
+Ready Queue: [File_C]
+Waiting Queue: [(2.0s, File_B), (3.0s, File_A)]
+
+Action: File_B moved to Waiting
+```
+
+**Time: 0.00s - File_C Starts**
+```
+Event Loop: "Let me run File_C"
+- File_C prints "Started downloading"
+- File_C hits: await asyncio.sleep(1)
+
+Ready Queue: []
+Waiting Queue: [(1.0s, File_C), (2.0s, File_B), (3.0s, File_A)]
+
+Action: All tasks are waiting, event loop sleeps until 1.0s
+```
+
+**Time: 1.00s - File_C Resumes**
+```
+Event Loop: "File_C's timer expired, wake it up!"
+- File_C moved from Waiting to Ready
+- File_C resumes after await
+- File_C prints "Download complete!"
+- File_C returns result and exits
+
+Ready Queue: []
+Waiting Queue: [(2.0s, File_B), (3.0s, File_A)]
+
+Action: File_C completed and removed from event loop
+```
+
+## Key Insights
+**1. Non-Blocking Behavior**
+When a task hits await, it doesn't block the entire program. The event loop immediately switches to another ready task.
+
+**2. Efficient Task Management**
+The event loop uses:
+
+  **Ready Queue (FIFO):** Processes tasks in order
+  **Waiting Queue (Priority Queue):** Sorted by wake-up time for efficient checking
+
+**3. Automatic Context Switching**
+You don't manually manage task switching - the event loop handles it automatically when it encounters await.  
+
+**The Magic of await**
+Every time you write await, you're essentially saying:
+
+"I'm waiting for something. Event loop, please run other tasks and come back to me when I'm ready."
