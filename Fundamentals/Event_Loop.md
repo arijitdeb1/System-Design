@@ -1,4 +1,4 @@
-# Event Loop @ Nginx
+# Event Loop @ Nginx/Redis
 
 <img width="2110" height="3491" alt="image" src="https://github.com/user-attachments/assets/b2fa63e9-90b8-4773-be98-e1069b06c79d" />
 
