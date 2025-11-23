@@ -153,7 +153,7 @@
    * Each DBMS implements Isolation Level different
    * Pessimistic - Row level locks, table locks, page locks to avoid lost updates
    * Optimistic - No locking, just track if things changed and fail the transaction if so
-   * Repeatable Read "locks" the rows it reads but it could be expensive if you read a lot of rows, postgres implementation RR as snapshots.That is why you don't get phantom reads with postgres in repeatable read.
+   * Repeatable Read "locks" the rows it reads but it could be expensive if you read a lot of rows, postgres implementation RR as snapshots.That is why you don't get phantom reads with postgres in repeatable read. When user tries to update and save an outdated snapshot, PostgreSQL detects an unresolvable conflict and stops your transaction, throwing an error called a "Serialization Failure" (SQLSTATE '40001').
    * Serializable are usually implemented with optimistic concurrency control, you can implement it pessimistically with SELECT FOR UPDATE 
 ![img.png](../images/isolation_level.png)
 
