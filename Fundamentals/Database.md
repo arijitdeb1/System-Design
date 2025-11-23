@@ -185,11 +185,15 @@ By default i.e `begin transaction` if 2 transaction are trying to update the sam
   * Each page has a size(e.g 8KB in postgres, 16KB in MySQL)
   * Assume each page has 3 rows, with 1001 rows you'll have 333~ pages
   * https://gehc-dt.udemy.com/course/database-engines-crash-course/learn/lecture/37150148#overview
+  * Databases read and write in pages. When you read a row from a table, the database finds the page where the row lives and identifies the file and offset where the page is located on disk. The database then asks the OS to read from the file on the particular offset for the length of the page. The OS checks its filesystem cache and if the required data isn’t there, the OS issues the read and pulls the page in memory for the database to consume.
+  * The database allocates a pool of memory, often called shared or buffer pool. Pages read from disk are placed in the buffer pool. Once a page is in the buffer pool, not only we get access to the requested row but also other rows in the page too depending on how wide the rows are. This makes reads efficient especially those resulting from index range scans. The smaller the rows, the more rows fit in a single page, the more bang for our buck a single I/O gives us.
+  * The same goes for writes, when a user updates a row, the database finds the page where the row lives, pull the page in the buffer pool and update the row in memory and make a journal entry of the change (often called WAL) persisted to disk. The page can remain in memory so it may receive more writes before it is finally flushed back to disk, minimizing the number of I/Os. Deletes and inserts work the same but implementation may vary.
   * Row-store databases write rows
   * Column-store databases write the rows in pages column by column
   * Document based databases compress documents and store them in page
   * graph based databases persist the connectivity in pages such that page read is efficient for traversing graphs
   * Postgres Default page size is 8KB, MySQL InnoDB is 16KB, MongoDB WiredTiger is 32KB, SQL Server is 8KB and Oracle is also 8KB.
+  * Postgres Page Layout - https://www.postgresql.org/docs/current/storage-page-layout.html
 - IO
   * IO operations is a read request to the disk
   * We try to minimize this as much as possible
