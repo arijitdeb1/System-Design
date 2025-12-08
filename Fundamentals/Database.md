@@ -346,3 +346,5 @@ CREATE INDEX idx_lastname ON students(last_name);
 
 
 ![img.png](../images/database_engines.png)
+
+<img width="1278" height="523" alt="image" src="https://github.com/user-attachments/assets/b260c8ff-246f-4198-bf36-9c2d071a2ba7" />
