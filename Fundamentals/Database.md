@@ -328,6 +328,14 @@ CREATE INDEX idx_lastname ON students(last_name);
        - now update query from User2 will not impact any record.
        - Note: if isbooked is indexed then postgres will not hit Heap and will not work as expected.
        - Note: Different databases has different approach for this specific scenario.
+- Another Approach(Postgres)
+    - If you use `SELECT ... FOR UPDATE`, the lock is taken at SELECT time, so only one process can proceed at a time.
+    - `BEGIN;
+      SELECT * FROM mytable WHERE id = 1 FOR UPDATE;
+      -- This locks the row with id=1 for this transaction.
+      -- Other sessions trying to update this row will wait until you COMMIT or ROLLBACK.`
+    - **UPDATE:** Locks the row only when the UPDATE is executed. If two sessions run UPDATE at the same time, one locks and updates, the other              waits for the lock, then rechecks the row and updates if still matching.
+    - **SELECT ... FOR UPDATE:** Locks the row as soon as the SELECT runs, before any UPDATE. This lets you fetch, inspect, and then safely update           the row later in your transaction, preventing others from updating it in the meantime.
 
 ## Database Engines:
 
