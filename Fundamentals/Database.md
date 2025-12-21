@@ -336,6 +336,15 @@ CREATE INDEX idx_lastname ON students(last_name);
       -- Other sessions trying to update this row will wait until you COMMIT or ROLLBACK.`
     - **UPDATE:** Locks the row only when the UPDATE is executed. If two sessions run UPDATE at the same time, one locks and updates, the other              waits for the lock, then rechecks the row and updates if still matching.
     - **SELECT ... FOR UPDATE:** Locks the row as soon as the SELECT runs, before any UPDATE. This lets you fetch, inspect, and then safely update           the row later in your transaction, preventing others from updating it in the meantime.
+- Anothet Approach(Postgres)
+    - Suppose you have a table of jobs to process, and multiple workers pick jobs in parallel:
+    - `SELECT * FROM jobs WHERE status = 'pending' FOR UPDATE SKIP LOCKED LIMIT 1;`
+    - Each worker runs this. If a job is already locked by another worker, `SKIP LOCKED` skips it and picks the next available one—so no worker            waits, and jobs are processed efficiently without conflicts.
+    - **SELECT ... FOR UPDATE:** Locks the selected rows. If a row is already locked by another transaction, your query waits (blocks) until the           lock is released.
+    - **SELECT ... FOR UPDATE SKIP LOCKED:** Locks the selected rows, but if a row is already locked, it skips that row and returns only unlocked          rows— never waits.
+    - Useful if you want to use Postgres as an alternative for Kafka/RabbitMQ
+
+
 
 ## Database Engines:
 
