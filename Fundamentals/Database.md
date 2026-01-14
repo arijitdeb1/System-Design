@@ -404,14 +404,15 @@ CREATE INDEX idx_lastname ON students(last_name);
          SELECT available FROM doctors 
          WHERE name='Doctor2' 
          FOR UPDATE; -- Locks Doctor2's row
+         ```
         → If Doctor2 already locked, WAIT
         → Prevents Doctor2 from changing until this commits
-
-          IF Doctor2 available THEN
+         ```
+         IF Doctor2 available THEN
             UPDATE doctors SET available=false WHERE name='Doctor1';
-          END IF;
-          COMMIT;
-        ```
+         END IF;
+         COMMIT;
+         ```
      2. SERIALIZABLE Isolation Level
         ```
         BEGIN TRANSACTION ISOLATION LEVEL SERIALIZABLE;
