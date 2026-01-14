@@ -413,13 +413,13 @@ CREATE INDEX idx_lastname ON students(last_name);
          END IF;
          COMMIT;
          ```
-     2. SERIALIZABLE Isolation Level
-        ```
-        BEGIN TRANSACTION ISOLATION LEVEL SERIALIZABLE;
-        SELECT available FROM doctors WHERE name='Doctor2';
-        UPDATE doctors SET available=false WHERE name='Doctor1';
-        COMMIT;
-        ```
+      2. SERIALIZABLE Isolation Level
+         ```
+         BEGIN TRANSACTION ISOLATION LEVEL SERIALIZABLE;
+         SELECT available FROM doctors WHERE name='Doctor2';
+         UPDATE doctors SET available=false WHERE name='Doctor1';
+         COMMIT;
+         ```
       → PostgreSQL detects write skew
       → One transaction will ROLLBACK with serialization error
 
