@@ -363,6 +363,63 @@ CREATE INDEX idx_lastname ON students(last_name);
         → Sees isbooked=1 (User1's change)
         → WHERE fails, UPDATE returns 0 rows
     - Multiple readers can read simultaneously while writer updates
+ - MVCC based snapshot may not certain race conditions
+    - Initial state: both available
+       Doctor1: available=true
+       Doctor2: available=true
+
+    -- T1: Doctor1's transaction (ID=100)
+       ```BEGIN; -- Takes snapshot at T1
+          SELECT available FROM doctors WHERE name='Doctor2';```
+       → Sees: available=true (from snapshot)
+       → "Doctor2 is available, I can leave"
+
+    -- T2: Doctor2's transaction (ID=101) 
+       ```BEGIN; -- Takes snapshot at T2
+         SELECT available FROM doctors WHERE name='Doctor1';```
+       → Sees: available=true (from snapshot)
+       → "Doctor1 is available, I can leave"
+
+    -- T3: Doctor1 marks unavailable
+        ```UPDATE doctors SET available=false WHERE name='Doctor1';
+           COMMIT;```
+
+    -- T4: Doctor2 marks unavailable
+        ```UPDATE doctors SET available=false WHERE name='Doctor2';
+           COMMIT;```
+
+    -- Result: BOTH unavailable! ❌ Constraint violated ```
+
+    - Why MVCC Doesn't Prevent This
+        - MVCC provides: Consistent snapshots (read isolation)
+        - MVCC does NOT provide: Prevention of conflicting writes based on stale reads
+        - Both transactions read different rows, so no row-level lock conflict
+        - Each UPDATE succeeds independently
+        - Constraint "at least one available" is violated
+     
+    - Solutions:
+      1. SELECT FOR UPDATE (Row-Level Lock)
+         ```
+         BEGIN;
+         SELECT available FROM doctors 
+         WHERE name='Doctor2' 
+         FOR UPDATE; -- Locks Doctor2's row
+     → If Doctor2 already locked, WAIT
+     → Prevents Doctor2 from changing until this commits
+
+        IF Doctor2 available THEN
+          UPDATE doctors SET available=false WHERE name='Doctor1';
+        END IF;
+        COMMIT;
+        ```
+     2. SERIALIZABLE Isolation Level
+        ```
+        BEGIN TRANSACTION ISOLATION LEVEL SERIALIZABLE;
+        SELECT available FROM doctors WHERE name='Doctor2';
+        UPDATE doctors SET available=false WHERE name='Doctor1';
+        COMMIT;
+    → PostgreSQL detects write skew
+    → One transaction will ROLLBACK with serialization error
 
 
 
