@@ -343,6 +343,26 @@ CREATE INDEX idx_lastname ON students(last_name);
     - **SELECT ... FOR UPDATE:** Locks the selected rows. If a row is already locked by another transaction, your query waits (blocks) until the           lock is released.
     - **SELECT ... FOR UPDATE SKIP LOCKED:** Locks the selected rows, but if a row is already locked, it skips that row and returns only unlocked          rows— never waits.
     - Useful if you want to use Postgres as an alternative for Kafka/RabbitMQ
+- PostgresSQL MVCC(Multi-Version Concurrency Control)
+    - Multiple readers and writers can work simultaneously without blocking each other
+    - Instead of locking rows during updates, PostgreSQL keeps multiple versions of the same row. Each transaction sees a snapshot of the data as it existed when the transaction started.
+    - Each transaction sees a consistent snapshot of data from when it started
+    - User1: UPDATE seats SET isbooked=1, name='User1' WHERE id=1 AND isbooked=0;
+        → Acquires ROW EXCLUSIVE LOCK
+        → Creates NEW row version (isbooked=1)
+        → Old version still exists (isbooked=0)
+    - User2: Same UPDATE query
+        → BLOCKS waiting for User1's lock
+        → Sees old version (isbooked=0) in their snapshot
+    - both the Transactions are using the same row and will have their own snapshots.
+    - User1: COMMIT;
+        → Releases lock
+        → New version becomes visible
+    - User2: Query resumes
+        → Re-evaluates WHERE condition
+        → Sees isbooked=1 (User1's change)
+        → WHERE fails, UPDATE returns 0 rows
+    - Multiple readers can read simultaneously while writer updates
 
 
 
