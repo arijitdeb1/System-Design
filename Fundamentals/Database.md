@@ -290,7 +290,7 @@ CREATE INDEX idx_lastname ON students(last_name);
     1. Updates that moves rows from a partition to another will be slow or fail sometime.
     2. Inefficient queries could accidentally scan all partition tables resulting in slow performance.
     3. Schema changes can be challenging , DBMS handles it though like indexes.
-12. Refer **`automate_partitions`** folder to make the partition creation process automatically.
+12. Refer [**`automate_partitions`**](https://github.com/arijitdeb1/System-Design/tree/main/Fundamentals/automate_partitions) folder to make the partition creation process automatically.
 
 
 ## Database Sharding
